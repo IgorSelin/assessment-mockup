@@ -1,5 +1,5 @@
 .container {
-  :global( .MuiTableRow-head) span {
+  :global(.MuiTableRow-head) span {
     font-weight: 600;
     font-size: 12px;
   }

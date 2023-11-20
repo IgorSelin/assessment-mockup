@@ -20,6 +20,8 @@ import {
   getRandomDate,
 } from "../../helpers/numbers";
 import style from "./MainPage.module.css";
+import Layout from "../../components/Layout";
+import { Autocomplete, TextField } from "@mui/material";
 
 interface Data {
   id: number;
@@ -41,7 +43,7 @@ interface Data {
   prioritySchoolsStuff: number;
 }
 
-function createData(
+const createData = (
   id: number,
   name: string,
   date: string,
@@ -59,7 +61,7 @@ function createData(
   priorityCommunityLinks: number,
   currentSchoolStuff: number,
   prioritySchoolsStuff: number
-): Data {
+) => {
   return {
     id,
     name,
@@ -79,7 +81,7 @@ function createData(
     currentSchoolStuff,
     prioritySchoolsStuff,
   };
-}
+};
 
 const dataFields = [
   {
@@ -284,7 +286,7 @@ interface EnhancedTableToolbarProps {
   numSelected: number;
 }
 
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
+const EnhancedTableToolbar = (props: EnhancedTableToolbarProps) => {
   const { numSelected } = props;
 
   return (
@@ -292,6 +294,11 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       sx={{
         pl: { sm: 2 },
         pr: { xs: 1, sm: 1 },
+        display: "flex",
+        alignItems: "start",
+        padding: "40px",
+        gap: "25px",
+        flexDirection: "column",
         ...(numSelected > 0 && {
           bgcolor: (theme) =>
             alpha(
@@ -309,9 +316,22 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
       >
         Assessment tool statistics
       </Typography>
+      <Box>
+        <Autocomplete
+          disablePortal
+          id="combo-box-demo"
+          options={mockSchools.map((e) => ({
+            label: e.schoolNameTranslation.nameTranslation.textValueKaz,
+          }))}
+          multiple
+          sx={{ width: 300 }}
+          className={style.schoolsInput}
+          renderInput={(params) => <TextField {...params} label="Schools" />}
+        />
+      </Box>
     </Toolbar>
   );
-}
+};
 
 const MainPage = () => {
   const [order, setOrder] = React.useState<Order>("asc");
@@ -375,59 +395,65 @@ const MainPage = () => {
   );
 
   return (
-    <Box sx={{ width: "100%" }} className={style.container}>
-      <Paper sx={{ width: "100%", mb: 2 }}>
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <TableContainer sx={{ padding: 2 }}>
-          <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onRequestSort={handleRequestSort}
-            />
-            <TableBody>
-              {visibleRows.map((row, index) => {
-                const isItemSelected = isSelected(row.id);
+    <Layout>
+      <Box sx={{ width: "100%" }} className={style.container}>
+        <Paper sx={{ width: "100%", mb: 2 }}>
+          <EnhancedTableToolbar numSelected={selected.length} />
+          <TableContainer sx={{ padding: 2 }}>
+            <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
+              <EnhancedTableHead
+                numSelected={selected.length}
+                order={order}
+                orderBy={orderBy}
+                onRequestSort={handleRequestSort}
+              />
+              <TableBody>
+                {visibleRows.map((row, index) => {
+                  const isItemSelected = isSelected(row.id);
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    sx={{ cursor: "pointer" }}
-                  >
-                    <TableCell>{row.name}</TableCell>
-                    <TableCell align="center">{formatDate(row.date)}</TableCell>
-                    {dataFields.map((e) => (
-                      <TableCell align="center">{(row as any)[e.key]}</TableCell>
-                    ))}
+                  return (
+                    <TableRow
+                      hover
+                      onClick={(event) => handleClick(event, row.id)}
+                      role="checkbox"
+                      aria-checked={isItemSelected}
+                      tabIndex={-1}
+                      key={row.id}
+                      selected={isItemSelected}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <TableCell>{row.name}</TableCell>
+                      <TableCell align="center">
+                        {formatDate(row.date)}
+                      </TableCell>
+                      {dataFields.map((e) => (
+                        <TableCell align="center">
+                          {(row as any)[e.key]}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  );
+                })}
+                {emptyRows > 0 && (
+                  <TableRow>
+                    <TableCell colSpan={6} />
                   </TableRow>
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow>
-                  <TableCell colSpan={6} />
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage}
-          onRowsPerPageChange={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </Box>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={rows.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+        </Paper>
+      </Box>
+    </Layout>
   );
 };
 
