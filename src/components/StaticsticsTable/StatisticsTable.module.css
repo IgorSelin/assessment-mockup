@@ -1,7 +1,7 @@
 .container {
   :global(.MuiTableRow-head) span {
     font-weight: 600;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .schoolsInput :global(.MuiInputBase-root) {
@@ -20,6 +20,7 @@
   }
 
   .pdfIcon {
+    margin-left: 10px;
     width: 25px;
     height: 25px;
     cursor: pointer;
