@@ -9,9 +9,7 @@ const SchoolStatistics = () => {
   return (
     <Layout>
       <StatisticsTable
-        title={
-          currentSchool?.schoolNameTranslation.nameTranslation.textValueKaz!
-        }
+        title={currentSchool?.name}
         data={[currentSchool, currentSchool, currentSchool]}
         isSingleSchool
       />

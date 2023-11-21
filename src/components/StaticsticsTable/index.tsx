@@ -13,11 +13,7 @@ import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import { visuallyHidden } from "@mui/utils";
 import ArrowBackIosIcon from "@mui/icons-material/ArrowBackIos";
-import {
-  customNumberGenerator,
-  formatDate,
-  getRandomDate,
-} from "../../helpers/numbers";
+import { formatDate } from "../../helpers/numbers";
 import style from "./StatisticsTable.module.css";
 import Layout from "../../components/Layout";
 import { Autocomplete, TextField } from "@mui/material";
@@ -302,25 +298,25 @@ const StatisticsTable = (props: StatisticsTableProps) => {
   };
 
   const getRows = () => {
-    let rows = props.data.map((e: any) =>
+    let rows = props.data.map((e) =>
       createData(
         e.id,
-        e.schoolNameTranslation.nameTranslation.textValueKaz!,
-        getRandomDate().toISOString(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator(),
-        customNumberGenerator()
+        e.name,
+        e.date,
+        e.currentOrientation,
+        e.priorityOrientation,
+        e.currentSchoolPolicy,
+        e.prioritySchoolPolicy,
+        e.currentPhysicalEnvironment,
+        e.priorityPhysicalEnvironment,
+        e.currentSocialEnvironment,
+        e.prioritySocialEnvironment,
+        e.currentHealthSkills,
+        e.priorityHealthSkills,
+        e.currentCommunityLinks,
+        e.priorityCommunityLinks,
+        e.currentSchoolStuff,
+        e.prioritySchoolsStuff
       )
     );
     if (selectedSchools.length > 0) {
@@ -377,7 +373,7 @@ const StatisticsTable = (props: StatisticsTableProps) => {
                   size="small"
                   id="combo-box-demo"
                   options={props.data.map((e) => ({
-                    label: e.schoolNameTranslation.nameTranslation.textValueKaz,
+                    label: (e as any).name,
                     id: e.id,
                   }))}
                   multiple
@@ -414,7 +410,7 @@ const StatisticsTable = (props: StatisticsTableProps) => {
                         <Link to={`/school/${row.id}`}>{row.name}</Link>
                       </TableCell>
                       <TableCell align="center">
-                        {formatDate(row.date as any)}
+                        {formatDate(row.date)}
                       </TableCell>
                       {dataFields.map((e) => (
                         <TableCell align="center">
