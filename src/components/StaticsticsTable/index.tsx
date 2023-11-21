@@ -223,7 +223,6 @@ const headCells: readonly HeadCell[] = [
 ];
 
 interface EnhancedTableProps {
-  numSelected: number;
   onRequestSort: (
     event: React.MouseEvent<unknown>,
     property: keyof Data
@@ -278,7 +277,7 @@ interface StatisticsTableProps {
 const StatisticsTable = (props: StatisticsTableProps) => {
   const [order, setOrder] = React.useState<Order>("asc");
   const [orderBy, setOrderBy] = React.useState<keyof Data>("date");
-  const [selected, setSelected] = React.useState<readonly number[]>([]);
+  const [selectedSchools, setSelectedSchools] = React.useState<number[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
@@ -289,25 +288,6 @@ const StatisticsTable = (props: StatisticsTableProps) => {
     const isAsc = orderBy === property && order === "asc";
     setOrder(isAsc ? "desc" : "asc");
     setOrderBy(property);
-  };
-
-  const handleClick = (_: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
-
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1)
-      );
-    }
-    setSelected(newSelected);
   };
 
   const handleChangePage = (event: unknown, newPage: number) => {
@@ -321,42 +301,46 @@ const StatisticsTable = (props: StatisticsTableProps) => {
     setPage(0);
   };
 
-  const isSelected = (id: number) => selected.indexOf(id) !== -1;
+  const getRows = () => {
+    let rows = props.data.map((e: any) =>
+      createData(
+        e.id,
+        e.schoolNameTranslation.nameTranslation.textValueKaz!,
+        getRandomDate().toISOString(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator(),
+        customNumberGenerator()
+      )
+    );
+    if (selectedSchools.length > 0) {
+      rows = rows.filter((e) => selectedSchools.includes(e.id));
+    }
+    return rows;
+  };
 
-  const rows = props.data.map((e: any) =>
-    createData(
-      e.id,
-      e.schoolNameTranslation.nameTranslation.textValueKaz!,
-      getRandomDate().toISOString(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator(),
-      customNumberGenerator()
-    )
-  );
-
-  // Avoid a layout jump when reaching the last page with empty rows.
+  const rows = getRows();
   const emptyRows =
     page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
-  const visibleRows = React.useMemo(
-    () =>
-      stableSort(rows, getComparator(order, orderBy)).slice(
-        page * rowsPerPage,
-        page * rowsPerPage + rowsPerPage
-      ),
-    [order, orderBy, page, rowsPerPage]
-  );
+  const visibleRows = React.useMemo(() => {
+    const sortedSchools = stableSort(rows, getComparator(order, orderBy)).slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
+
+    return sortedSchools;
+  }, [order, orderBy, page, rowsPerPage, selectedSchools]);
 
   return (
     <Layout>
@@ -394,8 +378,12 @@ const StatisticsTable = (props: StatisticsTableProps) => {
                   id="combo-box-demo"
                   options={props.data.map((e) => ({
                     label: e.schoolNameTranslation.nameTranslation.textValueKaz,
+                    id: e.id,
                   }))}
                   multiple
+                  onChange={(_, values) =>
+                    setSelectedSchools(values.map((e) => e.id))
+                  }
                   sx={{ width: 300 }}
                   className={style.schoolsInput}
                   renderInput={(params) => (
@@ -408,24 +396,18 @@ const StatisticsTable = (props: StatisticsTableProps) => {
           <TableContainer sx={{ padding: 2 }}>
             <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle">
               <EnhancedTableHead
-                numSelected={selected.length}
                 order={order}
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
               />
               <TableBody>
                 {visibleRows.map((row, index) => {
-                  const isItemSelected = isSelected(row.id as any);
-
                   return (
                     <TableRow
                       hover
-                      onClick={(event) => handleClick(event, row.id as any)}
                       role="checkbox"
-                      aria-checked={isItemSelected}
                       tabIndex={-1}
                       key={row.id}
-                      selected={isItemSelected}
                       sx={{ cursor: "pointer" }}
                     >
                       <TableCell className={style.nameCell}>
