@@ -1,4 +1,16 @@
-.header {
-  background-color: #205d76;
-  height: 100px;
+.container {
+  .header {
+    background-color: #205d76;
+    height: 80px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  .childrenContainer {
+    position: relative;
+    top: 70px;
+  }
 }

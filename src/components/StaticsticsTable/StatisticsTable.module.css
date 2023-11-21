@@ -1,0 +1,38 @@
+.container {
+  :global(.MuiTableRow-head) span {
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  .schoolsInput :global(.MuiInputBase-root) {
+    max-height: 80px;
+    overflow-y: auto;
+  }
+
+  .headerName {
+    display: block;
+    min-width: 220px;
+  }
+
+  .nameCell a {
+    text-decoration: unset;
+    color: rgb(0 137 220);
+  }
+
+  .pdfIcon {
+    width: 25px;
+    height: 25px;
+    cursor: pointer;
+  }
+
+  .backLink {
+    font-size: 13px;
+    text-decoration: none;
+    color: black;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 50px;
+  }
+}

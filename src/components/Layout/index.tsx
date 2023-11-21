@@ -6,9 +6,9 @@ interface LayoutProps {
 }
 const Layout = (props: LayoutProps) => {
   return (
-    <div>
-      <div className={style.header}></div>
-      {props.children}
+    <div className={style.container}>
+      <div className={style.header} />
+      <div className={style.childrenContainer}> {props.children}</div>
     </div>
   );
 };
